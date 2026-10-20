@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Dashboard | LearnPath</title>
+    <!-- Resolve the deferred Spring Security CSRF token before the page body renders. -->
+    <meta name="_csrf" th:content="${_csrf.token}">
 
+    <title>Dashboard | LearnPath</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 
     <style>
@@ -47,7 +49,6 @@
         }
 
         /* Sidebar */
-
         .sidebar {
             width: 250px;
             background: var(--white);
@@ -149,7 +150,6 @@
         }
 
         /* Main content */
-
         .main-content {
             flex: 1;
             min-width: 0;
@@ -202,7 +202,6 @@
         }
 
         /* Welcome banner */
-
         .welcome-banner {
             position: relative;
             overflow: hidden;
@@ -264,7 +263,6 @@
         }
 
         /* Section heading */
-
         .section-heading {
             display: flex;
             justify-content: space-between;
@@ -291,7 +289,6 @@
         }
 
         /* Statistics */
-
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -357,7 +354,6 @@
         }
 
         /* Workspace */
-
         .workspace-grid {
             display: grid;
             grid-template-columns: minmax(0, 1.45fr) minmax(260px, 1fr);
@@ -453,7 +449,6 @@
         }
 
         /* Goal card */
-
         .goal-progress {
             width: 100%;
             height: 7px;
@@ -517,7 +512,6 @@
         }
 
         /* Footer */
-
         .footer {
             color: #999db0;
             font-size: 12px;
@@ -526,7 +520,6 @@
         }
 
         /* Responsive */
-
         @media (max-width: 1100px) {
             .sidebar {
                 width: 215px;
@@ -667,7 +660,6 @@
 </head>
 
 <body>
-
 <div class="app-layout">
 
     <!-- Sidebar -->
@@ -713,6 +705,7 @@
                 <p>Small steps every day lead to big achievements. Stay consistent with your learning.</p>
             </div>
 
+            <!-- Spring Security logout form; Thymeleaf handles the CSRF field. -->
             <form th:action="@{/logout}" method="post">
                 <button type="submit" class="logout-button">
                     ↪ &nbsp; Log out
@@ -722,7 +715,6 @@
         </div>
 
     </aside>
-
 
     <!-- Main Content -->
     <main class="main-content">
@@ -735,21 +727,15 @@
             </div>
 
             <div class="topbar-right">
-
                 <div class="today-date" id="todayDate">📅 Today</div>
-
                 <div class="avatar">LP</div>
-
             </div>
 
         </header>
 
-
-        <!-- Welcome Banner -->
         <section class="welcome-banner">
 
             <div class="welcome-copy">
-
                 <p class="eyebrow">YOUR LEARNING JOURNEY</p>
 
                 <h1>
@@ -761,13 +747,11 @@
                     Every expert was once a beginner. Keep learning,
                     stay curious, and take one step closer to your goals today.
                 </p>
-
             </div>
 
             <div class="welcome-illustration">🎓</div>
 
         </section>
-
 
         <!-- Statistics -->
         <div class="section-heading">
@@ -780,57 +764,44 @@
         <section class="stats-grid">
 
             <article class="stat-card">
-
                 <div class="stat-top">
                     <div class="stat-icon purple">🎯</div>
                     <span>01</span>
                 </div>
-
                 <p class="stat-label">Active Learning Goals</p>
                 <div class="stat-value">0</div>
                 <p class="stat-note">Start by setting your first goal</p>
-
             </article>
 
             <article class="stat-card">
-
                 <div class="stat-top">
                     <div class="stat-icon green">✅</div>
                     <span>02</span>
                 </div>
-
                 <p class="stat-label">Completed Topics</p>
                 <div class="stat-value">0</div>
                 <p class="stat-note">Your completed topics will appear here</p>
-
             </article>
 
             <article class="stat-card">
-
                 <div class="stat-top">
                     <div class="stat-icon orange">⏱️</div>
                     <span>03</span>
                 </div>
-
                 <p class="stat-label">Study Hours</p>
                 <div class="stat-value">0 hrs</div>
                 <p class="stat-note">Every minute of learning counts</p>
-
             </article>
 
         </section>
 
-
         <!-- Learning Workspace -->
         <div class="section-heading" id="learning">
-
             <div>
                 <h2>Your Learning Workspace</h2>
                 <p>Everything you need to keep moving forward</p>
             </div>
-
         </div>
-
 
         <section class="workspace-grid">
 
@@ -838,97 +809,66 @@
             <article class="content-card">
 
                 <h3>Continue Your Journey</h3>
-
                 <p class="card-description">
                     Organize your learning and build a routine that works for you.
                 </p>
 
                 <!-- Smart Learning Roadmap -->
                 <div class="learning-item">
-
                     <div class="learning-icon">🗺️</div>
-
                     <div class="learning-info">
                         <h4>Smart Learning Roadmap</h4>
                         <p>Break your learning goals into smaller steps and track topic status.</p>
                     </div>
-
-                    <a th:href="@{/roadmap}" class="workspace-link">
-                        Open Roadmap →
-                    </a>
-
+                    <a th:href="@{/roadmap}" class="workspace-link">Open Roadmap →</a>
                 </div>
-
 
                 <!-- Weak Topic Tracker -->
                 <div class="learning-item">
-
                     <div class="learning-icon">🎯</div>
-
                     <div class="learning-info">
                         <h4>Weak Topic Tracker</h4>
                         <p>Track confidence, identify weak topics, and manage revisions.</p>
                     </div>
-
-                    <a th:href="@{/weak-topics}" class="workspace-link">
-                        Open Tracker →
-                    </a>
-
+                    <a th:href="@{/weak-topics}" class="workspace-link">Open Tracker →</a>
                 </div>
-
 
                 <!-- Progress Tracking -->
                 <div class="learning-item">
-
                     <div class="learning-icon">📈</div>
-
                     <div class="learning-info">
                         <h4>Progress Tracking</h4>
                         <p>Monitor your progress as you learn.</p>
                     </div>
-
                     <span class="coming-soon">Coming Soon</span>
-
                 </div>
-
 
                 <!-- Learning Resources -->
                 <div class="learning-item">
-
                     <div class="learning-icon">📖</div>
-
                     <div class="learning-info">
                         <h4>Learning Resources</h4>
                         <p>Keep your useful learning resources organized.</p>
                     </div>
-
                     <span class="coming-soon">Coming Soon</span>
-
                 </div>
-
 
                 <!-- Daily Study Planner -->
                 <div class="learning-item" id="planner">
-
                     <div class="learning-icon">🗓️</div>
-
                     <div class="learning-info">
                         <h4>Daily Study Planner</h4>
                         <p>Plan your study sessions and build consistency.</p>
                     </div>
-
                     <span class="coming-soon">Coming Soon</span>
-
                 </div>
 
             </article>
-
 
             <!-- Goal Card -->
             <article class="content-card" id="goals">
 
                 <h3>Learning Goals</h3>
-
                 <p class="card-description">
                     Your goals give direction to your learning journey.
                 </p>
@@ -948,9 +888,7 @@
                         <strong>Current Skill Level:</strong>
                         <span th:text="${student != null && student.currentSkillLevel != null
                             ? student.currentSkillLevel
-                            : 'Not set yet'}">
-                            Not set yet
-                        </span>
+                            : 'Not set yet'}">Not set yet</span>
                     </p>
 
                 </div>
@@ -972,7 +910,6 @@
 
         </section>
 
-
         <footer class="footer">
             © 2026 LearnPath · Learn smarter, grow faster.
         </footer>
@@ -980,7 +917,6 @@
     </main>
 
 </div>
-
 
 <script>
     const dateElement = document.getElementById("todayDate");
