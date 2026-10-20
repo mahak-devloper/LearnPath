@@ -421,6 +421,7 @@
         .learning-info p {
             font-size: 11px;
             color: var(--muted);
+            line-height: 1.5;
         }
 
         .coming-soon {
@@ -431,6 +432,24 @@
             padding: 6px 8px;
             border-radius: 7px;
             white-space: nowrap;
+        }
+
+        .workspace-link {
+            display: inline-block;
+            flex-shrink: 0;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--primary);
+            background: #f0efff;
+            padding: 8px 10px;
+            border-radius: 8px;
+            white-space: nowrap;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .workspace-link:hover {
+            background: var(--primary);
+            color: white;
         }
 
         /* Goal card */
@@ -628,6 +647,21 @@
                 font-size: 9px;
                 padding: 5px 6px;
             }
+
+            .workspace-link {
+                font-size: 10px;
+                padding: 7px 8px;
+            }
+
+            .learning-item {
+                gap: 9px;
+            }
+
+            .learning-icon {
+                width: 37px;
+                height: 37px;
+                font-size: 17px;
+            }
         }
     </style>
 </head>
@@ -654,6 +688,7 @@
                 <span class="nav-icon">🗺️</span>
                 Smart Learning Roadmap
             </a>
+
             <a th:href="@{/weak-topics}" class="nav-item">
                 <span class="nav-icon">🎯</span>
                 Weak Topic Tracker
@@ -808,20 +843,41 @@
                     Organize your learning and build a routine that works for you.
                 </p>
 
+                <!-- Smart Learning Roadmap -->
                 <div class="learning-item">
 
                     <div class="learning-icon">🗺️</div>
 
                     <div class="learning-info">
-                        <h4>Learning Roadmap</h4>
-                        <p>Break your goals into smaller learning steps.</p>
+                        <h4>Smart Learning Roadmap</h4>
+                        <p>Break your learning goals into smaller steps and track topic status.</p>
                     </div>
 
-                    <span class="coming-soon">Coming Soon</span>
+                    <a th:href="@{/roadmap}" class="workspace-link">
+                        Open Roadmap →
+                    </a>
 
                 </div>
 
 
+                <!-- Weak Topic Tracker -->
+                <div class="learning-item">
+
+                    <div class="learning-icon">🎯</div>
+
+                    <div class="learning-info">
+                        <h4>Weak Topic Tracker</h4>
+                        <p>Track confidence, identify weak topics, and manage revisions.</p>
+                    </div>
+
+                    <a th:href="@{/weak-topics}" class="workspace-link">
+                        Open Tracker →
+                    </a>
+
+                </div>
+
+
+                <!-- Progress Tracking -->
                 <div class="learning-item">
 
                     <div class="learning-icon">📈</div>
@@ -836,6 +892,7 @@
                 </div>
 
 
+                <!-- Learning Resources -->
                 <div class="learning-item">
 
                     <div class="learning-icon">📖</div>
@@ -850,6 +907,7 @@
                 </div>
 
 
+                <!-- Daily Study Planner -->
                 <div class="learning-item" id="planner">
 
                     <div class="learning-icon">🗓️</div>
