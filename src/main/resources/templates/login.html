@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | LearnPath</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body class="login-body">
+
+<div class="login-layout">
+
+    <!-- LEFT PANEL -->
+    <section class="brand-panel">
+
+        <a th:href="@{/}" class="brand-logo">
+            <span class="brand-icon">📚</span>
+            <span>
+                <span class="brand-name">LearnPath</span>
+                <span class="brand-tagline">LEARN • PRACTICE • GROW</span>
+            </span>
+        </a>
+
+        <div class="brand-content">
+            <span class="eyebrow">YOUR FUTURE STARTS HERE</span>
+
+            <h1>
+                Your Learning Journey,
+                <span>Simplified.</span>
+            </h1>
+
+            <p class="brand-description">
+                Build new skills, follow your personalized learning
+                roadmap, and turn your goals into achievements.
+            </p>
+
+            <div class="brand-features">
+
+                <div class="brand-feature">
+                    <span class="feature-icon">📖</span>
+                    <div>
+                        <strong>Structured Learning</strong>
+                        <small>Follow organized learning roadmaps.</small>
+                    </div>
+                </div>
+
+                <div class="brand-feature">
+                    <span class="feature-icon">📊</span>
+                    <div>
+                        <strong>Track Your Progress</strong>
+                        <small>Visualize your learning journey.</small>
+                    </div>
+                </div>
+
+                <div class="brand-feature">
+                    <span class="feature-icon">🎯</span>
+                    <div>
+                        <strong>Achieve Your Goals</strong>
+                        <small>Make every learning session count.</small>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="illustration-area">
+            <div class="orbit orbit-one"></div>
+            <div class="orbit orbit-two"></div>
+
+            <div class="study-card">
+                <div class="study-emoji">👩🏻‍💻</div>
+                <div class="study-title">Keep Learning!</div>
+                <div class="study-subtitle">Your next achievement awaits.</div>
+            </div>
+
+            <div class="float-item float-book">📚</div>
+            <div class="float-item float-star">✨</div>
+            <div class="float-item float-target">🎯</div>
+
+            <div class="progress-card">
+                <span>Weekly Progress</span>
+                <strong>Keep it up! 🚀</strong>
+                <div class="progress-track">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <p class="brand-footer">
+            A little progress every day adds up to big results.
+        </p>
+
+    </section>
+
+
+    <!-- RIGHT PANEL -->
+    <section class="login-panel">
+
+        <div class="top-link">
+            <span>New to LearnPath?</span>
+            <a th:href="@{/register}">Create Account ↗</a>
+        </div>
+
+        <div class="login-card">
+
+            <div class="login-icon">👋</div>
+
+            <h2>Welcome Back!</h2>
+
+            <p class="login-subtitle">
+                Enter your details to continue learning.
+            </p>
+
+            <div class="welcome-note">
+                <span>🚀</span>
+                <div>
+                    <strong>Ready to make progress?</strong>
+                    <p>Your learning journey continues here.</p>
+                </div>
+            </div>
+
+            <div th:if="${error}"
+                 class="form-error"
+                 th:text="${error}">
+            </div>
+
+            <form th:action="@{/login}" method="post">
+
+                <div class="form-field">
+                    <label for="email">Email Address</label>
+
+                    <div class="input-box">
+                        <span>✉</span>
+                        <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="you@example.com"
+                                autocomplete="email"
+                                required>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="password">Password</label>
+
+                    <div class="input-box">
+                        <span>🔒</span>
+                        <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required>
+
+                        <button
+                                type="button"
+                                id="togglePassword"
+                                class="toggle-password"
+                                aria-label="Show password">◉</button>
+                    </div>
+                </div>
+
+                <div class="login-options">
+                    <label class="remember-option">
+                        <input type="checkbox" name="remember-me">
+                        <span>Remember me</span>
+                    </label>
+
+                    <a href="#" class="forgot-link">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="login-button">
+                    <span>Login to LearnPath</span>
+                    <span class="button-arrow">→</span>
+                </button>
+
+            </form>
+
+            <div class="separator">
+                <span></span>
+                <small>YOUR JOURNEY STARTS HERE</small>
+                <span></span>
+            </div>
+
+            <p class="register-prompt">
+                Don't have an account?
+                <a th:href="@{/register}">Create one now</a>
+            </p>
+
+        </div>
+
+        <p class="login-footer">
+            Made for learners who dream bigger. ✨
+        </p>
+
+    </section>
+
+</div>
+
+<script>
+    const toggleButton = document.getElementById("togglePassword");
+    const passwordField = document.getElementById("password");
+
+    toggleButton.addEventListener("click", function () {
+        const hidden = passwordField.type === "password";
+
+        passwordField.type = hidden ? "text" : "password";
+
+        this.setAttribute(
+            "aria-label",
+            hidden ? "Hide password" : "Show password"
+        );
+    });
+</script>
+
+</body>
+</html>

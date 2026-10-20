@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Learning Roadmap | LearnPath</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f6fc;
+            color: #252344;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #6554c0;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #77758b;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            background: #6554c0;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card,
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+        }
+
+        .stat-card h2 {
+            color: #6554c0;
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .stat-card p {
+            color: #77758b;
+        }
+
+        .card {
+            margin-bottom: 25px;
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dedbea;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #6554c0;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        button {
+            border: none;
+            background: #6554c0;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover,
+        .back-btn:hover {
+            opacity: 0.9;
+        }
+
+        .topic-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .topic {
+            border: 1px solid #eeecf5;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .topic h3 {
+            margin-bottom: 8px;
+        }
+
+        .topic p {
+            color: #77758b;
+            margin-bottom: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            background: #efedff;
+            color: #6554c0;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 4px 4px 4px 0;
+        }
+
+        .empty {
+            color: #77758b;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .error {
+            color: #c62828;
+            font-size: 13px;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .topic-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .topic-actions form {
+            margin: 0;
+        }
+
+        .weak-btn {
+            background: #dc2626;
+        }
+
+        .strong-btn {
+            background: #15803d;
+        }
+
+        .status-form {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .status-form select {
+            max-width: 220px;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+        }
+
+        .cancel-btn {
+            background: #777;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: auto;
+            }
+
+            .status-form {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .status-form select {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <div>
+            <h1>🗺️ Smart Learning Roadmap</h1>
+            <p>Plan your learning journey, one topic at a time.</p>
+        </div>
+
+        <a th:href="@{/}" class="back-btn">← Dashboard</a>
+    </div>
+
+    <!-- Success and Error Messages -->
+    <div th:if="${successMessage}"
+         th:text="${successMessage}"
+         class="message success-message">
+    </div>
+
+    <div th:if="${errorMessage}"
+         th:text="${errorMessage}"
+         class="message error-message">
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats">
+
+        <div class="stat-card">
+            <h2 th:text="${totalTopics}">0</h2>
+            <p>Total Topics</p>
+        </div>
+
+        <div class="stat-card">
+            <h2 th:text="${completedTopics}">0</h2>
+            <p>Completed Topics</p>
+        </div>
+
+        <div class="stat-card">
+            <h2 th:text="${totalTopics > 0
+                ? (completedTopics * 100 / totalTopics) + '%'
+                : '0%'}">0%</h2>
+            <p>Overall Progress</p>
+        </div>
+
+    </div>
+
+    <!-- Add Topic Form -->
+    <div class="card">
+
+        <h2>➕ Add Learning Topic</h2>
+
+        <form th:action="@{/roadmap/add}"
+              th:object="${learningTopic}"
+              method="post">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="title">Topic Title</label>
+
+                    <input type="text"
+                           id="title"
+                           th:field="*{title}"
+                           placeholder="e.g. Core Java"
+                           required>
+
+                    <span class="error"
+                          th:if="${#fields.hasErrors('title')}"
+                          th:errors="*{title}">
+                    </span>
+                </div>
+
+                <div class="form-group">
+                    <label for="difficulty">Difficulty</label>
+
+                    <select id="difficulty"
+                            th:field="*{difficulty}"
+                            required>
+
+                        <option value="">Select difficulty</option>
+                        <option value="BEGINNER">Beginner</option>
+                        <option value="INTERMEDIATE">Intermediate</option>
+                        <option value="ADVANCED">Advanced</option>
+
+                    </select>
+
+                    <span class="error"
+                          th:if="${#fields.hasErrors('difficulty')}"
+                          th:errors="*{difficulty}">
+                    </span>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="description">Description</label>
+
+                    <textarea id="description"
+                              th:field="*{description}"
+                              placeholder="What do you want to learn?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="targetDate">Target Date</label>
+
+                    <input type="date"
+                           id="targetDate"
+                           th:field="*{targetDate}"
+                           required>
+
+                    <span class="error"
+                          th:if="${#fields.hasErrors('targetDate')}"
+                          th:errors="*{targetDate}">
+                    </span>
+                </div>
+
+                <div class="form-group">
+                    <label for="initialStatus">Initial Status</label>
+
+                    <input type="text"
+                           id="initialStatus"
+                           value="Not Started"
+                           disabled>
+                </div>
+
+                <div class="form-group full-width">
+                    <button type="submit">Add to My Roadmap</button>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- Edit Topic Form -->
+    <div class="card"
+         id="editTopicSection"
+         style="display: none;">
+
+        <h2>✏️ Edit Learning Topic</h2>
+
+        <form th:action="@{/roadmap/edit}"
+              method="post">
+
+            <input type="hidden"
+                   name="topicId"
+                   id="editTopicId">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="editTitle">Topic Title</label>
+
+                    <input type="text"
+                           name="title"
+                           id="editTitle"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editDifficulty">Difficulty</label>
+
+                    <select name="difficulty"
+                            id="editDifficulty"
+                            required>
+
+                        <option value="BEGINNER">Beginner</option>
+                        <option value="INTERMEDIATE">Intermediate</option>
+                        <option value="ADVANCED">Advanced</option>
+
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="editDescription">Description</label>
+
+                    <textarea name="description"
+                              id="editDescription"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="editTargetDate">Target Date</label>
+
+                    <input type="date"
+                           name="targetDate"
+                           id="editTargetDate"
+                           required>
+                </div>
+
+                <div class="form-group full-width">
+
+                    <button type="submit">Save Changes</button>
+
+                    <button type="button"
+                            class="cancel-btn"
+                            onclick="document.getElementById('editTopicSection').style.display='none';">
+                        Cancel
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- Topic List -->
+    <div class="card">
+
+        <h2>📚 My Learning Topics</h2>
+
+        <div class="topic-list">
+
+            <div th:if="${#lists.isEmpty(topics)}"
+                 class="empty">
+
+                <h3>No topics added yet!</h3>
+                <p>Add your first learning topic using the form above.</p>
+
+            </div>
+
+            <div class="topic"
+                 th:each="topic : ${topics}">
+
+                <!-- Topic Details -->
+                <div>
+
+                    <h3 th:text="${topic.title}">Core Java</h3>
+
+                    <p th:if="${topic.description != null
+                        and !topic.description.isEmpty()}"
+                       th:text="${topic.description}">
+                        Topic description
+                    </p>
+
+                    <span class="badge"
+                          th:text="${topic.difficulty}">
+                        Beginner
+                    </span>
+
+                    <span class="badge"
+                          th:text="'Target: ' + ${topic.targetDate}">
+                        Target date
+                    </span>
+
+                    <span class="badge"
+                          th:text="${topic.status}">
+                        NOT_STARTED
+                    </span>
+
+                    <!-- Weak Topic Indicator -->
+                    <span th:if="${topic.weak}"
+                          class="badge"
+                          style="background:#fee2e2;color:#b91c1c;">
+                        ⚠️ Weak Topic
+                    </span>
+
+                </div>
+
+                <!-- Update Status Form -->
+                <form th:action="@{/roadmap/update-status}"
+                      method="post"
+                      class="status-form">
+
+                    <input type="hidden"
+                           name="topicId"
+                           th:value="${topic.id}">
+
+                    <label th:for="${'topic-status-' + topic.id}">
+                        Update Status:
+                    </label>
+
+                    <select th:id="${'topic-status-' + topic.id}"
+                            name="status"
+                            required>
+
+                        <option value="NOT_STARTED"
+                                th:selected="${topic.status == 'NOT_STARTED'}">
+                            Not Started
+                        </option>
+
+                        <option value="IN_PROGRESS"
+                                th:selected="${topic.status == 'IN_PROGRESS'}">
+                            In Progress
+                        </option>
+
+                        <option value="COMPLETED"
+                                th:selected="${topic.status == 'COMPLETED'}">
+                            Completed
+                        </option>
+
+                    </select>
+
+                    <button type="submit">Update Status</button>
+
+                </form>
+
+                <!-- Weak Topic, Edit and Delete Buttons -->
+                <div class="topic-actions">
+
+                    <!-- Mark as Weak / Mark as Strong -->
+                    <form th:action="@{/roadmap/update-weakness}"
+                          method="post">
+
+                        <input type="hidden"
+                               name="topicId"
+                               th:value="${topic.id}">
+
+                        <input type="hidden"
+                               name="weak"
+                               th:value="${!topic.weak}">
+
+                        <button type="submit"
+                                th:class="${topic.weak ? 'strong-btn' : 'weak-btn'}"
+                                th:text="${topic.weak
+                                    ? '✅ Mark as Strong'
+                                    : '🎯 Mark as Weak'}">
+                            Mark as Weak
+                        </button>
+
+                    </form>
+
+                    <!-- Edit Button -->
+                    <button type="button"
+                            th:attr="data-id=${topic.id},
+                                     data-title=${topic.title},
+                                     data-description=${topic.description},
+                                     data-difficulty=${topic.difficulty},
+                                     data-target-date=${topic.targetDate}"
+                            onclick="editTopic(this)">
+                        ✏️ Edit
+                    </button>
+
+                    <!-- Delete Button -->
+                    <form th:action="@{/roadmap/delete}"
+                          method="post"
+                          onsubmit="return confirm('Are you sure you want to delete this topic?');">
+
+                        <input type="hidden"
+                               name="topicId"
+                               th:value="${topic.id}">
+
+                        <button type="submit"
+                                class="delete-btn">
+                            🗑️ Delete
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Edit Topic JavaScript -->
+<script>
+    function editTopic(button) {
+
+        const topicId = button.dataset.id;
+        const title = button.dataset.title;
+        const description = button.dataset.description;
+        const difficulty = button.dataset.difficulty;
+        const targetDate = button.dataset.targetDate;
+
+        document.getElementById("editTopicId").value = topicId;
+        document.getElementById("editTitle").value = title;
+        document.getElementById("editDescription").value = description || "";
+        document.getElementById("editDifficulty").value = difficulty;
+        document.getElementById("editTargetDate").value = targetDate;
+
+        const section = document.getElementById("editTopicSection");
+
+        section.style.display = "block";
+        section.scrollIntoView({ behavior: "smooth" });
+    }
+</script>
+
+</body>
+</html>

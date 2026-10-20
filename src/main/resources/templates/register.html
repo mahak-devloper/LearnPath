@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account | LearnPath</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a th:href="@{/}" class="logo">LearnPath.</a>
+    <a th:href="@{/}" class="nav-link">Home</a>
+</nav>
+
+<main class="register-page">
+
+    <section class="register-card">
+
+        <h1>Create your account</h1>
+
+        <p class="subtitle">
+            Start building your personalized learning journey.
+        </p>
+
+        <div th:if="${error}"
+             th:text="${error}"
+             class="alert-error">
+        </div>
+
+        <form th:action="@{/register}"
+              th:object="${registrationDto}"
+              method="post">
+
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+
+                <input type="text"
+                       id="fullName"
+                       th:field="*{fullName}"
+                       placeholder="Enter your full name"
+                       maxlength="100"
+                       autocomplete="name"
+                       required>
+
+                <p class="form-error"
+                   th:if="${#fields.hasErrors('fullName')}"
+                   th:errors="*{fullName}"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+
+                <input type="email"
+                       id="email"
+                       th:field="*{email}"
+                       placeholder="you@example.com"
+                       autocomplete="email"
+                       required>
+
+                <p class="form-error"
+                   th:if="${#fields.hasErrors('email')}"
+                   th:errors="*{email}"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+
+                <input type="password"
+                       id="password"
+                       th:field="*{password}"
+                       placeholder="At least 8 characters"
+                       minlength="8"
+                       maxlength="72"
+                       autocomplete="new-password"
+                       required>
+
+                <p class="form-error"
+                   th:if="${#fields.hasErrors('password')}"
+                   th:errors="*{password}"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="learningGoal">Learning Goal</label>
+
+                <input type="text"
+                       id="learningGoal"
+                       th:field="*{learningGoal}"
+                       placeholder="e.g. Become a Java Developer"
+                       required>
+
+                <p class="form-error"
+                   th:if="${#fields.hasErrors('learningGoal')}"
+                   th:errors="*{learningGoal}"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="currentSkillLevel">
+                    Current Skill Level
+                </label>
+
+                <select id="currentSkillLevel"
+                        th:field="*{currentSkillLevel}"
+                        required>
+
+                    <option value="">Select your level</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+
+                </select>
+
+                <p class="form-error"
+                   th:if="${#fields.hasErrors('currentSkillLevel')}"
+                   th:errors="*{currentSkillLevel}"></p>
+            </div>
+
+            <button type="submit" class="btn btn-full">
+                Create Account →
+            </button>
+
+        </form>
+
+        <div class="form-footer">
+            Your learning journey starts here.
+        </div>
+
+    </section>
+
+</main>
+
+<footer class="footer">
+    © 2026 LearnPath · Learn smarter, grow faster.
+</footer>
+
+</body>
+</html>
