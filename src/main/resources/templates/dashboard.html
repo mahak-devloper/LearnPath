@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Resolve the deferred Spring Security CSRF token before the page body renders. -->
+    <!-- Spring Security CSRF token -->
     <meta name="_csrf" th:content="${_csrf.token}">
 
     <title>Dashboard | LearnPath</title>
@@ -336,6 +336,10 @@
             background: #fff2e3;
         }
 
+        .red {
+            background: #ffe8e8;
+        }
+
         .stat-label {
             font-size: 13px;
             color: var(--muted);
@@ -353,7 +357,7 @@
             margin-top: 9px;
         }
 
-        /* Workspace */
+        /* Content cards and workspace */
         .workspace-grid {
             display: grid;
             grid-template-columns: minmax(0, 1.45fr) minmax(260px, 1fr);
@@ -448,7 +452,24 @@
             color: white;
         }
 
-        /* Goal card */
+        /* Learning Progress Chart */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            height: 300px;
+            margin: 10px auto;
+        }
+
+        .chart-empty {
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            padding: 35px 15px;
+            line-height: 1.7;
+        }
+
+        /* Goal progress */
         .goal-progress {
             width: 100%;
             height: 7px;
@@ -460,7 +481,6 @@
 
         .goal-progress span {
             display: block;
-            width: 0%;
             height: 100%;
             background: var(--primary);
             border-radius: inherit;
@@ -616,6 +636,10 @@
             .section-heading h2 {
                 font-size: 17px;
             }
+
+            .chart-container {
+                height: 260px;
+            }
         }
 
         @media (max-width: 430px) {
@@ -702,10 +726,13 @@
 
             <div class="help-card">
                 <h4>Keep growing! ✨</h4>
-                <p>Small steps every day lead to big achievements. Stay consistent with your learning.</p>
+                <p>
+                    Small steps every day lead to big achievements.
+                    Stay consistent with your learning.
+                </p>
             </div>
 
-            <!-- Spring Security logout form; Thymeleaf handles the CSRF field. -->
+            <!-- Spring Security logout form -->
             <form th:action="@{/logout}" method="post">
                 <button type="submit" class="logout-button">
                     ↪ &nbsp; Log out
@@ -719,6 +746,7 @@
     <!-- Main Content -->
     <main class="main-content">
 
+        <!-- Header -->
         <header class="topbar">
 
             <div class="page-heading">
@@ -732,6 +760,7 @@
             </div>
 
         </header>
+
 
         <section class="welcome-banner">
 
@@ -763,35 +792,114 @@
 
         <section class="stats-grid">
 
+            <!-- Total Topics -->
             <article class="stat-card">
                 <div class="stat-top">
                     <div class="stat-icon purple">🎯</div>
                     <span>01</span>
                 </div>
-                <p class="stat-label">Active Learning Goals</p>
-                <div class="stat-value">0</div>
-                <p class="stat-note">Start by setting your first goal</p>
+
+                <p class="stat-label">Total Topics</p>
+
+                <div class="stat-value"
+                     th:text="${totalTopics}">0</div>
+
+                <p class="stat-note">
+                    Topics in your learning roadmap
+                </p>
             </article>
 
+            <!-- Completed Topics -->
             <article class="stat-card">
                 <div class="stat-top">
                     <div class="stat-icon green">✅</div>
                     <span>02</span>
                 </div>
+
                 <p class="stat-label">Completed Topics</p>
-                <div class="stat-value">0</div>
-                <p class="stat-note">Your completed topics will appear here</p>
+
+                <div class="stat-value"
+                     th:text="${completedTopics}">0</div>
+
+                <p class="stat-note">
+                    Completed out of
+                    <span th:text="${totalTopics}">0</span>
+                    topics
+                </p>
             </article>
 
+            <!-- In Progress Topics -->
             <article class="stat-card">
                 <div class="stat-top">
                     <div class="stat-icon orange">⏱️</div>
                     <span>03</span>
                 </div>
-                <p class="stat-label">Study Hours</p>
-                <div class="stat-value">0 hrs</div>
-                <p class="stat-note">Every minute of learning counts</p>
+
+                <p class="stat-label">In Progress Topics</p>
+
+                <div class="stat-value"
+                     th:text="${inProgressTopics}">0</div>
+
+                <p class="stat-note">
+                    Topics you are currently learning
+                </p>
             </article>
+
+            <!-- Pending Topics -->
+            <article class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon orange">📚</div>
+                    <span>04</span>
+                </div>
+
+                <p class="stat-label">Pending Topics</p>
+
+                <div class="stat-value"
+                     th:text="${pendingTopics}">0</div>
+
+                <p class="stat-note">
+                    Topics waiting to be completed
+                </p>
+            </article>
+
+            <!-- Weak Topics -->
+            <article class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon red">⚠️</div>
+                    <span>05</span>
+                </div>
+
+                <p class="stat-label">Weak Topics</p>
+
+                <div class="stat-value"
+                     th:text="${weakTopicsCount}">0</div>
+
+                <p class="stat-note">
+                    Topics that need more practice
+                </p>
+            </article>
+
+        </section>
+
+        <!-- Learning Progress Chart -->
+        <section class="content-card" style="margin-bottom: 24px;">
+
+            <h3>Your Learning Progress</h3>
+
+            <p class="card-description">
+                Visualize your completed, in-progress, and pending topics.
+            </p>
+
+            <div class="chart-container" id="chartContainer">
+                <canvas id="learningProgressChart"></canvas>
+            </div>
+
+            <p class="chart-empty"
+               id="chartEmptyMessage"
+               style="display: none;">
+                You haven't added any topics yet.
+                Add topics to your Smart Learning Roadmap to see your progress here.
+            </p>
 
         </section>
 
@@ -809,6 +917,7 @@
             <article class="content-card">
 
                 <h3>Continue Your Journey</h3>
+
                 <p class="card-description">
                     Organize your learning and build a routine that works for you.
                 </p>
@@ -816,50 +925,70 @@
                 <!-- Smart Learning Roadmap -->
                 <div class="learning-item">
                     <div class="learning-icon">🗺️</div>
+
                     <div class="learning-info">
                         <h4>Smart Learning Roadmap</h4>
-                        <p>Break your learning goals into smaller steps and track topic status.</p>
+                        <p>
+                            Break your learning goals into smaller steps
+                            and track topic status.
+                        </p>
                     </div>
-                    <a th:href="@{/roadmap}" class="workspace-link">Open Roadmap →</a>
+
+                    <a th:href="@{/roadmap}" class="workspace-link">
+                        Open Roadmap →
+                    </a>
                 </div>
 
                 <!-- Weak Topic Tracker -->
                 <div class="learning-item">
                     <div class="learning-icon">🎯</div>
+
                     <div class="learning-info">
                         <h4>Weak Topic Tracker</h4>
-                        <p>Track confidence, identify weak topics, and manage revisions.</p>
+                        <p>
+                            Track confidence, identify weak topics,
+                            and manage revisions.
+                        </p>
                     </div>
-                    <a th:href="@{/weak-topics}" class="workspace-link">Open Tracker →</a>
+
+                    <a th:href="@{/weak-topics}" class="workspace-link">
+                        Open Tracker →
+                    </a>
                 </div>
 
                 <!-- Progress Tracking -->
                 <div class="learning-item">
                     <div class="learning-icon">📈</div>
+
                     <div class="learning-info">
                         <h4>Progress Tracking</h4>
                         <p>Monitor your progress as you learn.</p>
                     </div>
+
                     <span class="coming-soon">Coming Soon</span>
                 </div>
 
                 <!-- Learning Resources -->
                 <div class="learning-item">
                     <div class="learning-icon">📖</div>
+
                     <div class="learning-info">
                         <h4>Learning Resources</h4>
                         <p>Keep your useful learning resources organized.</p>
                     </div>
+
                     <span class="coming-soon">Coming Soon</span>
                 </div>
 
                 <!-- Daily Study Planner -->
                 <div class="learning-item" id="planner">
                     <div class="learning-icon">🗓️</div>
+
                     <div class="learning-info">
                         <h4>Daily Study Planner</h4>
                         <p>Plan your study sessions and build consistency.</p>
                     </div>
+
                     <span class="coming-soon">Coming Soon</span>
                 </div>
 
@@ -869,6 +998,7 @@
             <article class="content-card" id="goals">
 
                 <h3>Learning Goals</h3>
+
                 <p class="card-description">
                     Your goals give direction to your learning journey.
                 </p>
@@ -886,6 +1016,7 @@
 
                     <p style="margin-top: 10px;">
                         <strong>Current Skill Level:</strong>
+
                         <span th:text="${student != null && student.currentSkillLevel != null
                             ? student.currentSkillLevel
                             : 'Not set yet'}">Not set yet</span>
@@ -893,14 +1024,23 @@
 
                 </div>
 
+                <!-- Dynamic Completion Progress -->
                 <div class="goal-progress">
-                    <span></span>
+                    <span th:style="|width: ${completionPercentage}%;|"></span>
                 </div>
 
                 <div class="goal-meta">
-                    <span>Overall progress</span>
-                    <span>0%</span>
+                    <span>Topic completion</span>
+
+                    <span th:text="|${completionPercentage}%|">0%</span>
                 </div>
+
+                <p class="stat-note">
+                    <span th:text="${completedTopics}">0</span>
+                    of
+                    <span th:text="${totalTopics}">0</span>
+                    topics completed
+                </p>
 
                 <a th:href="@{/register}" class="primary-button">
                     Explore Your Learning Journey
@@ -910,6 +1050,7 @@
 
         </section>
 
+        <!-- Footer -->
         <footer class="footer">
             © 2026 LearnPath · Learn smarter, grow faster.
         </footer>
@@ -918,6 +1059,7 @@
 
 </div>
 
+<!-- Display Current Date -->
 <script>
     const dateElement = document.getElementById("todayDate");
 
@@ -932,6 +1074,106 @@
         dateElement.textContent =
             "📅 " + new Date().toLocaleDateString("en-IN", options);
     }
+</script>
+
+<!-- Load Chart.js exactly once -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<!-- Dynamic Learning Progress Chart -->
+<script th:inline="javascript">
+
+    // Read values from DashboardController.
+    const totalTopics = Number(/*[[${totalTopics}]]*/ 0);
+    const completedTopics = Number(/*[[${completedTopics}]]*/ 0);
+    const inProgressTopics = Number(/*[[${inProgressTopics}]]*/ 0);
+    const pendingTopics = Number(/*[[${pendingTopics}]]*/ 0);
+
+    const chartContainer =
+        document.getElementById("chartContainer");
+
+    const chartEmptyMessage =
+        document.getElementById("chartEmptyMessage");
+
+    const chartCanvas =
+        document.getElementById("learningProgressChart");
+
+    function showChartMessage(message) {
+        chartContainer.style.display = "none";
+        chartEmptyMessage.style.display = "block";
+        chartEmptyMessage.textContent = message;
+    }
+
+    // Check whether Chart.js loaded.
+    if (typeof Chart === "undefined") {
+
+        showChartMessage(
+            "Chart library could not load. Check your internet connection and refresh the page."
+        );
+
+    } else if (totalTopics <= 0) {
+
+        showChartMessage(
+            "No learning topics found. Add topics to your Smart Learning Roadmap to view your progress."
+        );
+
+    } else {
+
+        chartContainer.style.display = "block";
+        chartEmptyMessage.style.display = "none";
+
+        new Chart(chartCanvas, {
+            type: "doughnut",
+
+            data: {
+                labels: [
+                    "Completed",
+                    "In Progress",
+                    "Pending"
+                ],
+
+                datasets: [{
+                    data: [
+                        completedTopics,
+                        inProgressTopics,
+                        pendingTopics
+                    ],
+
+                    backgroundColor: [
+                        "#22c55e",
+                        "#f59e0b",
+                        "#cbd5e1"
+                    ],
+
+                    borderColor: "#ffffff",
+                    borderWidth: 4,
+                    hoverOffset: 10
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: "65%",
+
+                plugins: {
+                    legend: {
+                        position: "bottom",
+
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: "circle"
+                        }
+                    },
+
+                    tooltip: {
+                        enabled: true
+                    }
+                }
+            }
+        });
+    }
+
 </script>
 
 </body>
