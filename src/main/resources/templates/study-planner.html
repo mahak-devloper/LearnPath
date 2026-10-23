@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Study Planner | LearnPath</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #FFFDF7;
+            color: #253047;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #727C8D;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            background: #E8E5FF;
+            color: #5143B8;
+            padding: 11px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card, .card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .stat-card p {
+            color: #727C8D;
+            margin-bottom: 12px;
+        }
+
+        .stat-card h2 {
+            font-size: 28px;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 0.9fr 1.4fr;
+            gap: 22px;
+            align-items: start;
+        }
+
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #E2E6E8;
+            border-radius: 7px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #18A999;
+        }
+
+        .primary-btn {
+            width: 100%;
+            border: none;
+            background: #7667E8;
+            color: white;
+            padding: 12px;
+            border-radius: 7px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .primary-btn:hover {
+            background: #6252D5;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 7px;
+            margin-bottom: 18px;
+            background: #E1F8F1;
+            color: #137C6E;
+        }
+
+        .session {
+            padding: 17px 0;
+            border-bottom: 1px solid #EAE8E1;
+        }
+
+        .session:last-child {
+            border-bottom: none;
+        }
+
+        .session-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: start;
+        }
+
+        .session h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .session-meta {
+            color: #727C8D;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .pending {
+            background: #FFF0D8;
+            color: #A65D20;
+        }
+
+        .completed {
+            background: #DDF7E8;
+            color: #137C6E;
+        }
+
+        .notes {
+            margin-top: 10px;
+            color: #586579;
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .session-actions {
+            margin-top: 12px;
+        }
+
+        .complete-btn {
+            border: none;
+            background: #137C6E;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .complete-btn:hover {
+            background: #0D6257;
+        }
+
+        .edit-session-btn {
+            display: inline-block;
+            background: #E8E5FF;
+            color: #5143B8;
+            border: 1px solid #D4CEFF;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+        .edit-session-btn:hover {
+            background: #5143B8;
+            color: white;
+        }
+
+        .edit-form-link {
+            margin-top: 10px;
+        }
+
+        .delete-session-btn {
+            background-color: #FFF0ED;
+            color: #D94F45;
+            border: 1px solid #F6C5BE;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .delete-session-btn:hover {
+            background-color: #D94F45;
+            color: white;
+        }
+
+        .delete-form {
+            margin-top: 10px;
+        }
+        .timer-display {
+            margin-top: 12px;
+            padding: 12px;
+            background: #F0EDFF;
+            border-radius: 8px;
+            text-align: center;
+            color: #5143B8;
+        }
+
+        .timer-time {
+            font-size: 26px;
+            font-weight: bold;
+            margin: 8px 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .timer-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .start-timer-btn,
+        .pause-timer-btn {
+            border: none;
+            padding: 9px 12px;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .start-timer-btn {
+            background: #7667E8;
+        }
+
+        .pause-timer-btn {
+            background: #E46F51;
+        }
+
+        .timer-status {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #586579;
+        }
+
+        .alarm-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 7px;
+            background: #FFF0D8;
+            color: #A65D20;
+            font-weight: bold;
+        }
+
+
+
+        .completed-label {
+            display: inline-block;
+            color: #137C6E;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .empty {
+            color: #727C8D;
+            text-align: center;
+            padding: 30px 10px;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 16px;
+            }
+
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        /* LearnPath Adventure Pop design system */
+        body {
+            background: radial-gradient(circle at top left, #E8F8F3 0, #FFFDF7 38%, #F5F2FF 100%);
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1180px; }
+
+        .top-bar {
+            padding: 8px 0 20px;
+        }
+
+        h1 {
+            font-size: clamp(28px, 3vw, 36px);
+            letter-spacing: -0.8px;
+            color: #253047;
+        }
+
+        .top-bar > div:first-child::before {
+            content: "LEARNPATH • YOUR DAILY QUEST";
+            display: inline-block;
+            margin-bottom: 10px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #DDF7E8;
+            color: #137C6E;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.1px;
+        }
+
+        .subtitle { line-height: 1.6; }
+
+        .back-btn {
+            border-radius: 999px;
+            background: #E8E5FF;
+            color: #5143B8;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px #5143B822; }
+
+        .stats { gap: 14px; }
+
+        .stat-card, .card {
+            border: 1px solid rgba(37, 48, 71, .06);
+            border-radius: 20px;
+            box-shadow: 0 10px 28px rgba(37, 48, 71, .055);
+        }
+
+        .stat-card { position: relative; overflow: hidden; }
+        .stat-card::after {
+            content: "";
+            position: absolute;
+            right: -22px;
+            top: -25px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #18A99912;
+        }
+        .stat-card h2 { color: #253047; font-size: 32px; }
+        .stat-card:nth-child(2) h2 { color: #137C6E; }
+        .stat-card:nth-child(3) h2 { color: #7667E8; }
+
+        .card h2 { letter-spacing: -.3px; }
+        .content { gap: 20px; }
+        .primary-btn {
+            background: #18A999;
+            border-radius: 12px;
+            box-shadow: 0 5px 0 #0F8276;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .primary-btn:hover { background: #149989; }
+        .primary-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #0F8276; }
+
+        input, textarea { border-radius: 11px; background: #FFFEFC; }
+        input:focus, textarea:focus { border-color: #18A999; box-shadow: 0 0 0 3px #18A99920; }
+
+        .journey-banner {
+            margin: 0 0 24px;
+            padding: 22px 24px;
+            border-radius: 22px;
+            color: white;
+            background: linear-gradient(115deg, #18A999 0%, #278FAD 48%, #7667E8 100%);
+            box-shadow: 0 12px 28px rgba(81, 67, 184, .16);
+            overflow: hidden;
+            position: relative;
+        }
+        .journey-banner::after {
+            content: "✦";
+            position: absolute;
+            right: 28px;
+            top: 5px;
+            font-size: 82px;
+            opacity: .18;
+            transform: rotate(12deg);
+        }
+        .journey-banner h2 { font-size: 21px; margin-bottom: 7px; position: relative; z-index: 1; }
+        .journey-banner p { color: #F2FFFC; font-size: 14px; line-height: 1.6; position: relative; z-index: 1; }
+        .progress-track { height: 10px; max-width: 480px; margin-top: 16px; border-radius: 999px; background: #FFFFFF50; overflow: hidden; position: relative; z-index: 1; }
+        .progress-fill { height: 100%; min-width: 0; border-radius: 999px; background: #FFE18A; transition: width .35s ease; }
+        .progress-caption { margin-top: 8px; font-size: 12px !important; font-weight: 700; }
+        .journey-start-btn {
+            position: relative; z-index: 1; margin-top: 15px; border: 0;
+            border-radius: 999px; padding: 11px 18px; background: #FFE18A;
+            color: #453A79; font-weight: 800; font-size: 14px; cursor: pointer;
+            box-shadow: 0 4px 0 #D9B94E; transition: transform .15s ease;
+        }
+        .journey-start-btn:hover { transform: translateY(-2px); }
+        .journey-active {
+            background: #F0FFFB; border-radius: 16px; padding-right: 14px;
+            box-shadow: 0 0 0 2px #18A999, 0 8px 22px #18A99920;
+        }
+        .journey-active::before { border-color: #FFE18A; box-shadow: 0 0 0 5px #FFE18A70; }
+        .journey-active .timer-display { border-color: #18A999; }
+        .mission-current-label {
+            display: inline-block; margin: 0 0 10px; padding: 5px 9px;
+            border-radius: 999px; color: #137C6E; background: #DDF7E8;
+            font-size: 11px; font-weight: 800; letter-spacing: .3px;
+        }
+
+        .session {
+            position: relative;
+            padding: 22px 0 22px 30px;
+            border-bottom: 0;
+            margin-bottom: 10px;
+        }
+        .session::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 25px;
+            width: 17px;
+            height: 17px;
+            border: 4px solid #B7EEE3;
+            border-radius: 50%;
+            background: #18A999;
+            box-shadow: 0 0 0 4px #18A99915;
+            z-index: 2;
+        }
+        .session:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            left: 7px;
+            top: 43px;
+            bottom: -17px;
+            width: 3px;
+            border-radius: 99px;
+            background: linear-gradient(#18A99970, #7667E850);
+        }
+        .session:has(.badge.completed)::before {
+            content: "✓";
+            width: 23px;
+            height: 23px;
+            left: -3px;
+            top: 22px;
+            display: grid;
+            place-items: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 900;
+            border: 0;
+            background: #18A999;
+        }
+        .session-top { align-items: center; }
+        .session h3 { font-size: 17px; color: #253047; }
+        .badge { padding: 6px 10px; letter-spacing: .3px; }
+        .pending { background: #FFF0D8; color: #A65D20; }
+        .completed { background: #DDF7E8; color: #137C6E; }
+        .timer-display {
+            background: linear-gradient(135deg, #F0EDFF, #E9F8F4);
+            border: 1px solid #7667E826;
+            border-radius: 16px;
+            color: #5143B8;
+            padding: 16px;
+        }
+        .timer-time { font-size: 32px; letter-spacing: 1px; }
+        .start-timer-btn { background: #7667E8; }
+        .start-timer-btn:hover { background: #6252D5; }
+        .pause-timer-btn { background: #E46F51; }
+        .complete-btn {
+            background: #18A999;
+            border-radius: 999px;
+            padding: 10px 14px;
+            box-shadow: 0 3px 0 #0F8276;
+        }
+        .complete-btn:hover { background: #149989; }
+        .edit-session-btn {
+            background: #E8E5FF;
+            color: #5143B8;
+            border-color: #D4CEFF;
+            border-radius: 999px;
+        }
+        .edit-session-btn:hover { background: #5143B8; }
+        .delete-session-btn { border-radius: 999px; }
+        .session-actions form, .edit-form-link, .delete-form { display: inline-block; margin-right: 7px; vertical-align: middle; }
+        .delete-form { margin-top: 10px; }
+        .completed-label { background: #DDF7E8; padding: 8px 12px; border-radius: 999px; }
+        .message { border: 1px solid #B9EBDD; border-radius: 12px; }
+        .empty { border: 2px dashed #D4CEFF; border-radius: 16px; background: #FBFAFF; }
+
+        @media (max-width: 760px) {
+            .journey-banner { padding: 20px; }
+            .session { padding-left: 26px; }
+            .session-top { align-items: flex-start; }
+            .session-top .badge { margin-top: 2px; }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="top-bar">
+        <div>
+            <h1>Your Learning Adventure ✨</h1>
+            <p class="subtitle">Turn today’s goals into small missions. One step at a time.</p>
+        </div>
+
+        <a th:href="@{/}" class="back-btn">← Dashboard</a>
+    </div>
+
+    <!-- Success Message -->
+    <div th:if="${successMessage}"
+         class="message"
+         th:text="${successMessage}">
+        Study session added successfully!
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats">
+
+        <div class="stat-card">
+            <p>Total Sessions</p>
+            <h2 th:text="${totalSessions}">0</h2>
+        </div>
+
+        <div class="stat-card">
+            <p>Completed Sessions</p>
+            <h2 th:text="${completedSessions}">0</h2>
+        </div>
+
+        <div class="stat-card">
+            <p>Pending Sessions</p>
+            <h2 th:text="${totalSessions - completedSessions}">0</h2>
+        </div>
+
+    </div>
+
+    <!-- Daily Journey Progress -->
+    <section class="journey-banner"
+             th:with="progressPercent=${totalSessions > 0 ? (completedSessions * 100 / totalSessions) : 0}">
+        <h2>✨ Your Daily Quest</h2>
+        <p>Every small mission moves you forward. Keep your momentum going!</p>
+        <div class="progress-track" role="progressbar"
+             aria-label="Daily study progress"
+             th:attr="aria-valuenow=${progressPercent}, aria-valuemin=0, aria-valuemax=100">
+            <div class="progress-fill" th:style="|width: ${progressPercent}%;|"></div>
+        </div>
+        <p class="progress-caption"
+           th:text="|${completedSessions} of ${totalSessions} missions complete • ${progressPercent}% progress|">
+            0 of 0 missions complete • 0% progress
+        </p>
+        <button type="button"
+                class="journey-start-btn"
+                id="startMyDayBtn">
+            🚀 Start My Day
+        </button>
+        <p id="journeyStatus" aria-live="polite" style="margin-top: 10px; font-weight: 700;"></p>
+    </section>
+
+    <div class="content">
+
+        <!-- Add Study Session Form -->
+        <div class="card">
+
+            <h2>🧭 Create a Mission</h2>
+
+            <form th:action="@{/study-planner/add}"
+                  th:object="${studySession}"
+                  method="post">
+
+                <div class="form-group">
+                    <label for="topic">Topic / Task</label>
+
+                    <input type="text"
+                           id="topic"
+                           th:field="*{topic}"
+                           placeholder="e.g. Java Collections"
+                           maxlength="150"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="studyDate">Study Date</label>
+
+                    <input type="date"
+                           id="studyDate"
+                           th:field="*{studyDate}"
+                           th:attr="min=${today}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="durationMinutes">Duration (minutes)</label>
+
+                    <input type="number"
+                           id="durationMinutes"
+                           th:field="*{durationMinutes}"
+                           min="1"
+                           max="1440"
+                           placeholder="e.g. 60"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Notes (Optional)</label>
+
+                    <textarea id="notes"
+                              th:field="*{notes}"
+                              maxlength="500"
+                              placeholder="What do you want to cover?"></textarea>
+                </div>
+
+                <button type="submit" class="primary-btn">
+                    + Add Study Session
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- Study Sessions List -->
+        <div class="card">
+
+            <h2>🗺️ Your Mission Path</h2>
+
+            <div th:if="${#lists.isEmpty(sessions)}" class="empty">
+                <p style="font-size: 28px; margin-bottom: 8px;">🌱</p>
+                <p><strong>Your adventure starts here!</strong></p>
+                <p>Add your first mission and take one small step toward your goal.</p>
+            </div>
+
+            <!-- Use studyItem instead of reserved name session -->
+            <div th:each="studyItem : ${sessions}"
+                 class="session"
+                 th:attr="data-study-date=${studyItem.studyDate}"
+                 th:classappend="${studyItem.status == 'COMPLETED'} ? ' mission-completed' : ' mission-pending'">
+
+                <div class="session-top">
+
+                    <div>
+                        <h3 th:text="${studyItem.topic}">
+                            Java Collections
+                        </h3>
+
+                        <p class="session-meta">
+                            📅
+                            <span th:text="${#temporals.format(studyItem.studyDate, 'dd MMM yyyy')}">
+                                21 Oct 2026
+                            </span>
+
+                            <br>
+
+                            ⏱
+                            <span th:text="${studyItem.durationMinutes + ' minutes'}">
+                                60 minutes
+                            </span>
+                        </p>
+                    </div>
+
+                    <span class="badge"
+                          th:classappend="${studyItem.status == 'COMPLETED'} ? ' completed' : ' pending'"
+                          th:text="${studyItem.status}">
+                        PENDING
+                    </span>
+
+                </div>
+
+                <!-- Optional Notes -->
+                <p class="notes"
+                   th:if="${studyItem.notes != null and !studyItem.notes.isEmpty()}"
+                   th:text="${studyItem.notes}">
+                    Revise the important concepts.
+                </p>
+
+                <!-- Study Timer -->
+                <div class="timer-display"
+                     th:if="${studyItem.status != 'COMPLETED'}"
+                     th:attr="data-session-id=${studyItem.id},
+              data-duration=${studyItem.durationMinutes}">
+
+                    <p>Study Timer ⏱️</p>
+
+                    <div class="timer-time">00:00</div>
+
+                    <div class="timer-buttons">
+                        <button type="button" class="start-timer-btn">
+                            ▶ Start Timer
+                        </button>
+
+                        <button type="button" class="pause-timer-btn" disabled>
+                            ⏸ Pause
+                        </button>
+                    </div>
+
+                    <p class="timer-status">Ready to study!</p>
+
+                    <div class="alarm-message" hidden>
+                        🔔 Time's up! Take a break.
+                    </div>
+                </div>
+
+
+
+                <!-- Mark as Completed -->
+                <div class="session-actions"
+                     th:if="${studyItem.status != 'COMPLETED'}">
+
+                    <form th:action="@{/study-planner/complete/{id}(id=${studyItem.id})}"
+                          method="post">
+
+                        <button type="submit" class="complete-btn">
+                            ✓ Mark as Completed
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <div class="session-actions"
+                     th:if="${studyItem.status == 'COMPLETED'}">
+
+                    <span class="completed-label">
+                        ✓ Study session completed
+                    </span>
+
+                </div>
+
+                <!-- Edit Study Session -->
+                <div class="edit-form-link"
+                     th:if="${studyItem.status != 'COMPLETED'}">
+                    <a class="edit-session-btn"
+                       th:href="@{/study-planner/edit/{id}(id=${studyItem.id})}">
+                        ✏️ Edit / Reschedule
+                    </a>
+                </div>
+
+                <!-- Delete Study Session -->
+                <form class="delete-form"
+                      th:action="@{/study-planner/delete/{id}(id=${studyItem.id})}"
+                      method="post"
+                      onsubmit="return confirm('Are you sure you want to permanently delete this study session?');">
+
+                    <button type="submit" class="delete-session-btn">
+                        🗑️ Delete Session
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // Daily mission path: this is a lightweight browser-side start state.
+        const startMyDayBtn = document.getElementById("startMyDayBtn");
+        const journeyStatus = document.getElementById("journeyStatus");
+        const missionCards = Array.from(document.querySelectorAll(".session[data-study-date]"));
+        const today = new Date();
+        const todayKey = today.getFullYear() + "-" +
+            String(today.getMonth() + 1).padStart(2, "0") + "-" +
+            String(today.getDate()).padStart(2, "0");
+        const startedKey = "learnpath-journey-started-" + todayKey;
+
+        function focusNextMission(showMessage) {
+            const todaysMissions = missionCards.filter(card => card.dataset.studyDate === todayKey);
+            const nextMission = todaysMissions.find(card => card.classList.contains("mission-pending"));
+
+            missionCards.forEach(card => {
+                card.classList.remove("journey-active");
+                const label = card.querySelector(".mission-current-label");
+                if (label) label.remove();
+            });
+
+            if (todaysMissions.length === 0) {
+                journeyStatus.textContent = "No missions planned for today yet. Add a mission with today's date to begin! 🌱";
+                return false;
+            }
+
+            if (!nextMission) {
+                journeyStatus.textContent = "🎉 All of today's missions are complete. Amazing work!";
+                return false;
+            }
+
+            nextMission.classList.add("journey-active");
+            const label = document.createElement("span");
+            label.className = "mission-current-label";
+            label.textContent = "⭐ CURRENT MISSION";
+            const title = nextMission.querySelector(".session-top");
+            if (title) nextMission.insertBefore(label, title);
+
+            if (showMessage) {
+                journeyStatus.textContent = "Your journey has started! Focus on the highlighted mission, then mark it complete to move forward. 💪";
+                nextMission.scrollIntoView({ behavior: "smooth", block: "center" });
+            } else {
+                journeyStatus.textContent = "Your next mission is highlighted below. One step at a time! ✨";
+            }
+            return true;
+        }
+if (startMyDayBtn) {
+    startMyDayBtn.addEventListener("click", function () {
+        if (missionCards.length === 0) {
+            journeyStatus.textContent =
+                "🌱 Pehle apne goals add karo, phir apni adventure start karo!";
+            return;
+        }
+
+        window.location.href = "/learning-adventure";
+    });
+}
+
+
+
+        let journeyAlreadyStarted = false;
+        try { journeyAlreadyStarted = localStorage.getItem(startedKey) === "true"; } catch (error) { /* storage may be blocked */ }
+        if (journeyAlreadyStarted) {
+            startMyDayBtn.textContent = "▶ Continue My Day";
+            focusNextMission(false);
+        }
+
+        const timers = document.querySelectorAll(".timer-display");
+
+        timers.forEach(function (timerBox) {
+
+            const durationMinutes = Number(timerBox.dataset.duration);
+            const timeDisplay = timerBox.querySelector(".timer-time");
+            const startButton = timerBox.querySelector(".start-timer-btn");
+            const pauseButton = timerBox.querySelector(".pause-timer-btn");
+            const statusDisplay = timerBox.querySelector(".timer-status");
+            const alarmMessage = timerBox.querySelector(".alarm-message");
+
+            let remainingSeconds = durationMinutes * 60;
+            let timerInterval = null;
+            let endTime = null;
+            let audioContext = null;
+
+            function updateDisplay() {
+                const minutes = Math.floor(remainingSeconds / 60);
+                const seconds = remainingSeconds % 60;
+
+                timeDisplay.textContent =
+                    String(minutes).padStart(2, "0") + ":" +
+                    String(seconds).padStart(2, "0");
+            }
+
+
+            function playAlarm() {
+                try {
+                    const AudioContextClass =
+                        window.AudioContext || window.webkitAudioContext;
+
+                    if (!AudioContextClass) {
+                        statusDisplay.textContent =
+                            "Timer finished. Audio is not supported by this browser.";
+                        return;
+                    }
+
+                    audioContext = new AudioContextClass();
+
+                    audioContext.resume().then(function () {
+                        let count = 0;
+                        const totalBeeps = 20;
+
+                        function beep() {
+                            if (count >= totalBeeps) {
+                                audioContext.close();
+                                return;
+                            }
+
+                            const oscillator = audioContext.createOscillator();
+                            const gain = audioContext.createGain();
+
+                            oscillator.connect(gain);
+                            gain.connect(audioContext.destination);
+
+                            oscillator.type = "square";
+                            oscillator.frequency.value = 1000;
+
+                            const now = audioContext.currentTime;
+
+                            gain.gain.setValueAtTime(0.0001, now);
+                            gain.gain.exponentialRampToValueAtTime(0.8, now + 0.03);
+                            gain.gain.setValueAtTime(0.8, now + 0.25);
+                            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+
+                            oscillator.start(now);
+                            oscillator.stop(now + 0.4);
+
+                            count++;
+                            setTimeout(beep, 500);
+                        }
+
+                        beep();
+                    });
+
+                } catch (error) {
+                    console.error("Alarm audio error:", error);
+                }
+            }
+
+
+
+            function finishTimer() {
+                clearInterval(timerInterval);
+                timerInterval = null;
+
+                remainingSeconds = 0;
+                updateDisplay();
+
+                startButton.disabled = true;
+                pauseButton.disabled = true;
+
+                statusDisplay.textContent = "Study session time completed!";
+                alarmMessage.hidden = false;
+
+                playAlarm();
+
+                if ("Notification" in window &&
+                    Notification.permission === "granted") {
+                    new Notification("LearnPath Study Planner", {
+                        body: "Time's up! Take a break."
+                    });
+                }
+            }
+
+            function tick() {
+                remainingSeconds = Math.max(
+                    0,
+                    Math.ceil((endTime - Date.now()) / 1000)
+                );
+
+                updateDisplay();
+
+                if (remainingSeconds <= 0) {
+                    finishTimer();
+                }
+            }
+
+            startButton.addEventListener("click", async function () {
+
+                if (timerInterval !== null || remainingSeconds <= 0) {
+                    return;
+                }
+
+                // Ask permission for browser notifications.
+                if ("Notification" in window &&
+                    Notification.permission === "default") {
+                    try {
+                        await Notification.requestPermission();
+                    } catch (error) {
+                        console.log("Notification permission unavailable.");
+                    }
+                }
+
+                // Resume timer after pause, or start it for the first time.
+                endTime = Date.now() + remainingSeconds * 1000;
+
+                alarmMessage.hidden = true;
+                startButton.disabled = true;
+                pauseButton.disabled = false;
+
+                statusDisplay.textContent = "Focus time! Keep studying.";
+
+                tick();
+
+                if (remainingSeconds > 0) {
+                    timerInterval = setInterval(tick, 250);
+                }
+            });
+
+            pauseButton.addEventListener("click", function () {
+
+                if (timerInterval === null) {
+                    return;
+                }
+
+                clearInterval(timerInterval);
+                timerInterval = null;
+
+                remainingSeconds = Math.max(
+                    0,
+                    Math.ceil((endTime - Date.now()) / 1000)
+                );
+
+                updateDisplay();
+
+                startButton.disabled = remainingSeconds <= 0;
+                pauseButton.disabled = true;
+
+                statusDisplay.textContent = "Timer paused. Resume when ready.";
+            });
+
+            updateDisplay();
+
+        });
+
+    });
+</script>
+
+
+</html>

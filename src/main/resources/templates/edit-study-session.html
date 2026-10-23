@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Study Session | LearnPath</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #263247;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-size: 27px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #718096;
+            line-height: 1.6;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            background: #e8edff;
+            color: #3548a5;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dce2ec;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #5367df;
+            box-shadow: 0 0 0 3px rgba(83, 103, 223, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .help-text {
+            margin-top: 6px;
+            color: #718096;
+            font-size: 12px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .save-btn,
+        .cancel-btn {
+            flex: 1;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .save-btn {
+            background: #5367df;
+            color: white;
+        }
+
+        .save-btn:hover {
+            background: #4054c5;
+        }
+
+        .cancel-btn {
+            background: #edf0f5;
+            color: #465166;
+        }
+
+        .cancel-btn:hover {
+            background: #dfe4ed;
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 16px;
+            }
+
+            .card {
+                padding: 22px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="top-bar">
+        <div>
+            <h1>✏️ Edit Study Session</h1>
+            <p class="subtitle">
+                Update your study plan and keep your learning journey on track.
+            </p>
+        </div>
+
+        <a th:href="@{/study-planner}" class="back-btn">
+            ← Back
+        </a>
+    </div>
+
+    <div class="card">
+
+        <form th:action="@{/study-planner/update/{id}(id=${studySession.id})}"
+              th:object="${studySession}"
+              method="post">
+
+            <div class="form-group">
+                <label for="topic">Topic / Task</label>
+
+                <input type="text"
+                       id="topic"
+                       th:field="*{topic}"
+                       maxlength="150"
+                       placeholder="e.g. Java Collections"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="studyDate">Study Date</label>
+
+                <input type="date"
+                       id="studyDate"
+                       th:field="*{studyDate}"
+                       th:attr="min=${today}"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="durationMinutes">Duration (minutes)</label>
+
+                <input type="number"
+                       id="durationMinutes"
+                       th:field="*{durationMinutes}"
+                       min="1"
+                       max="1440"
+                       placeholder="e.g. 60"
+                       required>
+
+                <p class="help-text">
+                    Enter the planned duration of your study session.
+                </p>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notes (Optional)</label>
+
+                <textarea id="notes"
+                          th:field="*{notes}"
+                          maxlength="500"
+                          placeholder="What do you want to cover?"></textarea>
+            </div>
+
+            <div class="buttons">
+                <button type="submit" class="save-btn">
+                    💾 Save Changes
+                </button>
+
+                <a th:href="@{/study-planner}" class="cancel-btn">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+

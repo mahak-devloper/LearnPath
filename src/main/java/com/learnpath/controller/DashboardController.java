@@ -28,7 +28,7 @@ public class DashboardController {
             Authentication authentication,
             Model model) {
 
-        // Default values when no student is available
+        // Default topic statistics
         model.addAttribute("totalTopics", 0L);
         model.addAttribute("completedTopics", 0L);
         model.addAttribute("inProgressTopics", 0L);
@@ -36,10 +36,15 @@ public class DashboardController {
         model.addAttribute("weakTopicsCount", 0L);
         model.addAttribute("completionPercentage", 0);
 
+        // Default XP and level values
+        model.addAttribute("totalXp", 0);
+        model.addAttribute("currentLevel", 1);
+        model.addAttribute("levelProgress", 0);
+        model.addAttribute("xpToNextLevel", 100);
+
         if (authentication != null
                 && authentication.isAuthenticated()
-                && !"anonymousUser".equals(
-                authentication.getPrincipal())) {
+                && !"anonymousUser".equals(authentication.getName())) {
 
             String email = authentication.getName();
 
@@ -71,48 +76,53 @@ public class DashboardController {
                                         studentId, "IN_PROGRESS");
 
                 // Remaining topics
-                long pendingTopics =
-                        Math.max(
-                                0,
-                                totalTopics
-                                        - completedTopics
-                                        - inProgressTopics
-                        );
+                long pendingTopics = Math.max(
+                        0,
+                        totalTopics - completedTopics - inProgressTopics
+                );
 
                 // Weak topics
                 long weakTopicsCount =
                         learningTopicRepository
-                                .countByStudentIdAndWeakTrue(
-                                        studentId);
+                                .countByStudentIdAndWeakTrue(studentId);
 
-                // Overall topic completion percentage
+                // Topic completion percentage
                 int completionPercentage = totalTopics > 0
                         ? (int) Math.round(
                         completedTopics * 100.0 / totalTopics)
                         : 0;
 
-                // Send data to dashboard.html
-                model.addAttribute(
-                        "totalTopics", totalTopics);
+                // XP and level
+                int totalXp = student.getTotalXp() == null
+                        ? 0 : student.getTotalXp();
 
-                model.addAttribute(
-                        "completedTopics", completedTopics);
+                int currentLevel = student.getCurrentLevel() == null
+                        ? 1 : student.getCurrentLevel();
 
-                model.addAttribute(
-                        "inProgressTopics", inProgressTopics);
+                // XP progress within the current level
+                int levelProgress = totalXp % 100;
 
-                model.addAttribute(
-                        "pendingTopics", pendingTopics);
+                // XP remaining until the next level
+                int xpToNextLevel = 100 - levelProgress;
 
+                // Add topic statistics to dashboard
+                model.addAttribute("totalTopics", totalTopics);
+                model.addAttribute("completedTopics", completedTopics);
+                model.addAttribute("inProgressTopics", inProgressTopics);
+                model.addAttribute("pendingTopics", pendingTopics);
+                model.addAttribute("weakTopicsCount", weakTopicsCount);
                 model.addAttribute(
-                        "weakTopicsCount", weakTopicsCount);
+                        "completionPercentage", completionPercentage);
 
-                model.addAttribute(
-                        "completionPercentage",
-                        completionPercentage);
+                // Add XP statistics to dashboard
+                model.addAttribute("totalXp", totalXp);
+                model.addAttribute("currentLevel", currentLevel);
+                model.addAttribute("levelProgress", levelProgress);
+                model.addAttribute("xpToNextLevel", xpToNextLevel);
             }
         }
 
         return "dashboard";
     }
 }
+

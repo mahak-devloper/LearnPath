@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Adventure | LearnPath</title>
+
+    <style>
+        :root {
+            --bg: #100d24;
+            --panel: #1b1638;
+            --purple: #9b7bff;
+            --purple-light: #c4b5fd;
+            --green: #42d392;
+            --text: #f7f5ff;
+            --muted: #a9a3c7;
+            --border: rgba(255, 255, 255, .10);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                    radial-gradient(ellipse at 50% 0%, #30205d 0%, transparent 45%),
+                    var(--bg);
+            color: var(--text);
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+        }
+
+        button, a {
+            font: inherit;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .page {
+            max-width: 1050px;
+            margin: auto;
+            padding: 24px 20px 60px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 34px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #a78bfa, #7048e8);
+            border-radius: 15px;
+            box-shadow: 0 6px 22px #7048e855;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .hud {
+            display: flex;
+            gap: 9px;
+        }
+
+        .hud-item {
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, .07);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .back-link {
+            padding: 11px 15px;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            color: var(--muted);
+            font-size: 13px;
+            transition: .2s;
+        }
+
+        .back-link:hover {
+            color: white;
+            border-color: var(--purple);
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 7px 13px;
+            border-radius: 30px;
+            background: #9b7bff18;
+            border: 1px solid #9b7bff40;
+            color: var(--purple-light);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .intro h1 {
+            font-size: clamp(28px, 5vw, 43px);
+            letter-spacing: -1.4px;
+            margin-bottom: 10px;
+        }
+
+        .intro p {
+            color: var(--muted);
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .journey-info {
+            max-width: 430px;
+            margin: 22px auto 0;
+            padding: 15px 18px;
+            border-radius: 17px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .045);
+            text-align: left;
+        }
+
+        .journey-info-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 11px;
+        }
+
+        .journey-info-top .progress-label {
+            color: var(--purple-light);
+        }
+
+        .progress-track {
+            height: 8px;
+            background: #ffffff12;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #8b5cf6, #42d392);
+            border-radius: inherit;
+            transition: width .5s;
+        }
+
+        /* Mission map */
+
+        .map {
+            position: relative;
+            max-width: 650px;
+            margin: 26px auto 0;
+            padding: 24px 0 45px;
+        }
+
+        /* Duolingo-style Snake Path */
+        .mission-path {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .mission-path .path-base {
+            fill: none;
+            stroke: #5b4b91;
+            stroke-width: 5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 9 10;
+            opacity: 0.8;
+        }
+
+        .mission-path .path-completed {
+            fill: none;
+            stroke: #42d392;
+            stroke-width: 5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0.95;
+            filter: drop-shadow(0 0 5px #42d39255);
+        }
+
+        .mission-row {
+            position: relative;
+            z-index: 1;
+        }
+
+        .map-label {
+            position: relative;
+            z-index: 2;
+            width: fit-content;
+            margin: 0 auto 26px;
+            padding: 9px 15px;
+            background: #2a2050;
+            border: 1px solid #9b7bff55;
+            border-radius: 30px;
+            color: var(--purple-light);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+        }
+
+        .mission-row {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            min-height: 132px;
+            margin-bottom: 8px;
+        }
+
+        .mission-row:nth-child(even) {
+            justify-content: flex-start;
+            padding-left: 8%;
+        }
+
+        .mission-row:nth-child(odd) {
+            justify-content: flex-end;
+            padding-right: 8%;
+        }
+
+        .mission-node {
+            flex-shrink: 0;
+            width: 106px;
+            min-height: 106px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: white;
+            background: linear-gradient(145deg, #45347b, #29204e);
+            box-shadow: 0 7px 0 #17112e, 0 12px 25px #00000035;
+            border: 3px solid #7661b5;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .mission-node:not(:disabled) {
+            cursor: pointer;
+        }
+
+        .mission-node:not(:disabled):hover {
+            transform: translateY(-5px) scale(1.04);
+        }
+
+        .mission-node .node-icon {
+            font-size: 29px;
+            line-height: 1;
+        }
+
+        .mission-node .node-number {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .mission-node.completed {
+            background: linear-gradient(145deg, #38d99a, #16865c);
+            border-color: #83f4c2;
+            box-shadow: 0 7px 0 #10583f, 0 12px 25px #00000035;
+        }
+
+        .mission-node.active {
+            background: linear-gradient(145deg, #a78bfa, #7547e9);
+            border-color: #d7c9ff;
+            box-shadow: 0 7px 0 #4b2c9e, 0 0 0 8px #9b7bff18,
+            0 0 35px #9b7bff50;
+            animation: glow 2s infinite alternate;
+        }
+
+        .mission-node.upcoming {
+            background: linear-gradient(145deg, #292441, #1e1a34);
+            border-color: #4c4568;
+            color: #aaa3c6;
+            box-shadow: 0 7px 0 #17112e;
+        }
+
+        .mission-node:disabled {
+            cursor: not-allowed;
+            opacity: .78;
+        }
+
+        .mission-node.upcoming:disabled:hover {
+            transform: none;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 7px 0 #4b2c9e, 0 0 0 5px #9b7bff13;
+            }
+            to {
+                box-shadow: 0 7px 0 #4b2c9e, 0 0 0 10px #9b7bff20,
+                0 0 30px #9b7bff35;
+            }
+        }
+
+        .mission-caption {
+            width: 175px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .mission-row:nth-child(even) .mission-caption {
+            left: calc(8% + 122px);
+            text-align: left;
+        }
+
+        .mission-row:nth-child(odd) .mission-caption {
+            right: calc(8% + 122px);
+            text-align: right;
+        }
+
+        .mission-caption strong {
+            display: block;
+            font-size: 14px;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+            margin-bottom: 6px;
+        }
+
+        .mission-caption span {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .mission-caption .status-text {
+            display: inline-block;
+            margin-top: 7px;
+            color: var(--purple-light);
+            font-weight: 800;
+            letter-spacing: .7px;
+            text-transform: uppercase;
+            font-size: 9px;
+        }
+
+        .mission-caption .status-text.completed-label {
+            color: var(--green);
+        }
+
+        .mission-caption .status-text.locked-label {
+            color: #8f88ad;
+        }
+
+        /* Empty state */
+
+        .empty-state {
+            position: relative;
+            z-index: 2;
+            max-width: 440px;
+            margin: 35px auto;
+            padding: 30px 24px;
+            text-align: center;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+        }
+
+        .empty-icon {
+            font-size: 45px;
+            margin-bottom: 14px;
+        }
+
+        .empty-state h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .primary-link {
+            display: inline-block;
+            padding: 12px 19px;
+            border: 0;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #a78bfa, #7547e9);
+            color: white;
+            font-weight: 800;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .bottom-note {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .toast {
+            margin: 0 auto 20px;
+            max-width: 600px;
+            padding: 13px 16px;
+            border: 1px solid #42d39255;
+            background: #42d39212;
+            color: #8df0c2;
+            border-radius: 13px;
+            font-size: 13px;
+        }
+
+        /* Mission popup */
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            background: rgba(8, 6, 20, .78);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+        }
+
+        .mission-modal {
+            width: 100%;
+            max-width: 420px;
+            background: #201a40;
+            border: 1px solid #9b7bff55;
+            border-radius: 25px;
+            padding: 28px;
+            box-shadow: 0 25px 90px #0008;
+            animation: pop .2s ease-out;
+        }
+
+        @keyframes pop {
+            from {
+                opacity: 0;
+                transform: translateY(12px) scale(.97);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .modal-icon {
+            width: 57px;
+            height: 57px;
+            display: grid;
+            place-items: center;
+            font-size: 29px;
+            background: #9b7bff20;
+            border-radius: 18px;
+        }
+
+        .close-button {
+            width: 35px;
+            height: 35px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .modal-kicker {
+            color: var(--purple-light);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .mission-modal h2 {
+            font-size: 24px;
+            overflow-wrap: anywhere;
+            margin-bottom: 10px;
+        }
+
+        .modal-description {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+            margin-bottom: 18px;
+        }
+
+        .modal-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .detail-box {
+            padding: 13px;
+            border-radius: 13px;
+            background: #ffffff08;
+            border: 1px solid var(--border);
+        }
+
+        .detail-box span {
+            display: block;
+            font-size: 10px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .detail-box strong {
+            font-size: 13px;
+            overflow-wrap: anywhere;
+        }
+
+        .modal-action {
+            width: 100%;
+            padding: 14px;
+            border: 0;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #a78bfa, #7547e9);
+            color: white;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .modal-action:disabled {
+            background: #16865c;
+            cursor: default;
+        }
+
+        .modal-secondary {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+        }
+
+
+        @media (max-width: 600px) {
+            .page {
+                padding: 17px 12px 40px;
+            }
+
+            .topbar {
+                margin-bottom: 25px;
+                gap: 12px;
+            }
+
+            .brand {
+                font-size: 16px;
+            }
+
+            .brand-icon {
+                width: 37px;
+                height: 37px;
+            }
+
+            .top-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .hud {
+                gap: 7px;
+            }
+
+            .hud-item {
+                padding: 9px 10px;
+                font-size: 11px;
+            }
+
+            .back-link {
+                padding: 9px 11px;
+                font-size: 11px;
+            }
+
+            .intro h1 {
+                font-size: 29px;
+                letter-spacing: -.8px;
+            }
+
+            .intro p {
+                font-size: 13px;
+            }
+
+            .journey-info {
+                padding: 13px;
+            }
+
+            .map {
+                margin-top: 22px;
+                padding-top: 20px;
+            }
+
+            .map-label {
+                font-size: 10px;
+                padding: 8px 12px;
+                margin-bottom: 22px;
+            }
+
+            .mission-row {
+                min-height: 122px;
+                margin-bottom: 4px;
+            }
+
+            .mission-row:nth-child(even) {
+                padding-left: 2%;
+            }
+
+            .mission-row:nth-child(odd) {
+                padding-right: 2%;
+            }
+
+            .mission-node {
+                width: 76px;
+                min-height: 76px;
+                border-width: 2px;
+                gap: 4px;
+            }
+
+            .mission-node .node-icon {
+                font-size: 24px;
+            }
+
+            .mission-node .node-number {
+                font-size: 8px;
+                letter-spacing: .5px;
+            }
+
+            .mission-row:nth-child(even) .mission-caption {
+                left: calc(2% + 86px);
+                right: auto;
+                width: 135px;
+                text-align: left;
+            }
+
+            .mission-row:nth-child(odd) .mission-caption {
+                right: calc(2% + 86px);
+                left: auto;
+                width: 135px;
+                text-align: right;
+            }
+
+            .mission-caption strong {
+                font-size: 12px;
+                line-height: 1.4;
+                margin-bottom: 5px;
+            }
+
+            .mission-caption span {
+                font-size: 10px;
+            }
+
+            .mission-caption .status-text {
+                font-size: 9px;
+                line-height: 1.5;
+            }
+
+            .mission-modal {
+                padding: 22px;
+                border-radius: 21px;
+            }
+
+            .mission-modal h2 {
+                font-size: 21px;
+            }
+
+            .bottom-note {
+                font-size: 11px;
+                padding: 0 8px;
+            }
+        }
+
+
+    </style>
+</head>
+
+<body>
+<div class="page">
+
+    <header class="topbar">
+        <a th:href="@{/study-planner}" class="brand">
+            <span class="brand-icon">🧭</span>
+            <span>LearnPath <span style="color:#b9a5ff;">Adventure</span></span>
+        </a>
+
+        <div class="top-actions">
+            <div class="hud">
+                <div class="hud-item">
+                    ⭐ <span th:text="${totalXp}">0</span> XP
+                </div>
+                <div class="hud-item">
+                    🏆 Level <span th:text="${currentLevel}">1</span>
+                </div>
+            </div>
+
+            <a th:href="@{/study-planner}" class="back-link">
+                ← Study Planner
+            </a>
+        </div>
+    </header>
+
+    <div th:if="${successMessage}"
+         class="toast"
+         th:text="${successMessage}">
+    </div>
+
+    <section class="intro">
+        <span class="eyebrow">Your learning journey</span>
+        <h1>Every mission makes you stronger.</h1>
+        <p>Follow your path, complete your study goals, and collect XP along the way.</p>
+
+        <div class="journey-info">
+            <div class="journey-info-top">
+                <span>🗺️ YOUR PROGRESS</span>
+                <span class="progress-label">
+                    <span th:text="${completedSessions}">0</span>
+                    /
+                    <span th:text="${totalSessions}">0</span> missions
+                </span>
+            </div>
+
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </section>
+
+    <main class="map">
+        <svg class="mission-path"
+             id="missionPath"
+             aria-hidden="true">
+
+            <path id="pathBase" class="path-base" d=""></path>
+
+            <path id="pathCompleted" class="path-completed" d=""></path>
+
+        </svg>
+
+        <div class="map-label">✦ YOUR MISSION PATH ✦</div>
+
+        <div th:if="${#lists.isEmpty(sessions)}" class="empty-state">
+            <div class="empty-icon">🪄</div>
+            <h2>Your adventure starts here!</h2>
+            <p>
+                You don't have any missions yet. Add your first study session
+                to the Study Planner and it will appear on your adventure map.
+            </p>
+            <a th:href="@{/study-planner}" class="primary-link">
+                + Create First Mission
+            </a>
+        </div>
+
+        <div th:each="mission, iter : ${sessions}"
+             class="mission-row"
+             th:unless="${#lists.isEmpty(sessions)}">
+
+            <button type="button"
+                    class="mission-node"
+                    th:classappend="${mission.status == 'COMPLETED'
+                        ? ' completed'
+                        : (iter.index == activeMissionIndex
+                            ? ' active'
+                            : ' upcoming')}"
+                    th:disabled="${mission.status != 'COMPLETED'
+                        and iter.index != activeMissionIndex}"
+                    th:attr="data-id=${mission.id},
+                             data-title=${mission.topic},
+                             data-notes=${mission.notes},
+                             data-duration=${mission.durationMinutes},
+                             data-date=${mission.studyDate},
+                             data-status=${mission.status}"
+                    onclick="openMission(this)">
+
+                <span class="node-icon"
+                      th:text="${mission.status == 'COMPLETED'
+                          ? '✓'
+                          : (iter.index == activeMissionIndex
+                              ? '⚔️'
+                              : '🔒')}">
+                    ⭐
+                </span>
+
+                <span class="node-number"
+                      th:text="${'MISSION ' + (iter.index + 1)}">
+                    MISSION 1
+                </span>
+            </button>
+
+            <div class="mission-caption">
+                <strong th:text="${mission.topic}">Java Practice</strong>
+
+                <span>
+                    ⏱
+                    <span th:text="${mission.durationMinutes}">30</span>
+                    minutes
+                </span>
+
+                <br>
+
+                <span class="status-text"
+                      th:classappend="${mission.status == 'COMPLETED'
+                          ? ' completed-label'
+                          : (iter.index == activeMissionIndex
+                              ? ''
+                              : ' locked-label')}"
+                      th:text="${mission.status == 'COMPLETED'
+                          ? '✓ COMPLETED'
+                          : (iter.index == activeMissionIndex
+                              ? '★ YOUR NEXT MISSION'
+                              : '🔒 LOCKED')}">
+                    UPCOMING
+                </span>
+            </div>
+        </div>
+
+    </main>
+
+    <p class="bottom-note">
+        ✨ Small steps every day lead to big achievements.<br>
+        Complete a mission to earn
+        <strong style="color:#f5c86b;">20 XP</strong>.
+    </p>
+</div>
+
+<!-- Mission details popup -->
+<div class="modal-backdrop"
+     id="missionBackdrop"
+     onclick="closeMissionOutside(event)">
+
+    <section class="mission-modal"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="modalTitle">
+
+        <div class="modal-top">
+            <div class="modal-icon" id="modalIcon">⚔️</div>
+
+            <button type="button"
+                    class="close-button"
+                    onclick="closeMission()"
+                    aria-label="Close">
+                ✕
+            </button>
+        </div>
+
+        <p class="modal-kicker" id="modalKicker">YOUR MISSION</p>
+
+        <h2 id="modalTitle">Mission title</h2>
+
+        <p class="modal-description" id="modalNotes">
+            Your mission details will appear here.
+        </p>
+
+        <div class="modal-details">
+            <div class="detail-box">
+                <span>⏱ DURATION</span>
+                <strong id="modalDuration">30 minutes</strong>
+            </div>
+
+            <div class="detail-box">
+                <span>📅 STUDY DATE</span>
+                <strong id="modalDate">Not specified</strong>
+            </div>
+        </div>
+
+        <form id="completeMissionForm" method="post">
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+            <button type="submit"
+                    class="modal-action"
+                    id="completeButton">
+                Complete Mission · +20 XP
+            </button>
+        </form>
+
+        <button type="button"
+                class="modal-secondary"
+                onclick="closeMission()">
+            Back to Adventure
+        </button>
+    </section>
+</div>
+
+<script th:inline="javascript">
+    const completedCount = Number(/*[[${completedSessions}]]*/ 0);
+    const totalCount = Number(/*[[${totalSessions}]]*/ 0);
+
+    const progress = totalCount > 0
+        ? Math.round((completedCount / totalCount) * 100)
+        : 0;
+
+    document.getElementById("progressFill").style.width = progress + "%";
+
+    const backdrop = document.getElementById("missionBackdrop");
+    const completeForm = document.getElementById("completeMissionForm");
+    const completeButton = document.getElementById("completeButton");
+
+    function openMission(button) {
+        const id = button.dataset.id;
+        const title = button.dataset.title || "Study Mission";
+        const notes = button.dataset.notes ||
+            "No extra notes added for this mission.";
+        const duration = button.dataset.duration || "Not specified";
+        const date = button.dataset.date || "Not specified";
+        const status = button.dataset.status || "PENDING";
+
+        const completed = status === "COMPLETED";
+
+        document.getElementById("modalTitle").textContent = title;
+        document.getElementById("modalNotes").textContent = notes;
+        document.getElementById("modalDuration").textContent =
+            duration + " minutes";
+        document.getElementById("modalDate").textContent = date;
+
+        document.getElementById("modalIcon").textContent =
+            completed ? "✅" : "⚔️";
+
+        document.getElementById("modalKicker").textContent =
+            completed ? "MISSION COMPLETED" : "YOUR NEXT CHALLENGE";
+
+        completeForm.action =
+            "/learning-adventure/complete/" + encodeURIComponent(id);
+
+        completeButton.disabled = completed;
+        completeButton.textContent = completed
+            ? "✓ Mission Completed"
+            : "Complete Mission · +20 XP";
+
+        backdrop.classList.add("open");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeMission() {
+        backdrop.classList.remove("open");
+        document.body.style.overflow = "";
+    }
+
+    function closeMissionOutside(event) {
+        if (event.target === backdrop) {
+            closeMission();
+        }
+    }
+
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape") {
+            closeMission();
+        }
+    });
+
+    function drawSnakePath() {
+        const map = document.querySelector(".map");
+        const svg = document.getElementById("missionPath");
+        const basePath = document.getElementById("pathBase");
+        const completedPath = document.getElementById("pathCompleted");
+
+        if (!map || !svg || !basePath || !completedPath) {
+            return;
+        }
+
+        const nodes = Array.from(
+            map.querySelectorAll(".mission-row .mission-node")
+        );
+
+        const mapRect = map.getBoundingClientRect();
+        const width = map.clientWidth;
+        const height = map.scrollHeight;
+
+        svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+        svg.setAttribute("width", width);
+        svg.setAttribute("height", height);
+
+        if (nodes.length < 2) {
+            basePath.setAttribute("d", "");
+            completedPath.setAttribute("d", "");
+            return;
+        }
+
+        const points = nodes.map(node => {
+            const rect = node.getBoundingClientRect();
+
+            return {
+                x: rect.left + rect.width / 2 - mapRect.left,
+                y: rect.top + rect.height / 2 - mapRect.top
+            };
+        });
+
+        let fullPath = "";
+        let completedPathData = "";
+
+        points.forEach((point, index) => {
+            if (index === 0) {
+                fullPath = `M ${point.x} ${point.y}`;
+                return;
+            }
+
+            const previous = points[index - 1];
+            const middleY = (previous.y + point.y) / 2;
+
+            const curve = [
+                `C ${previous.x} ${middleY},`,
+                `${point.x} ${middleY},`,
+                `${point.x} ${point.y}`
+            ].join(" ");
+
+            fullPath += " " + curve;
+
+            if (nodes[index - 1].classList.contains("completed")
+                && nodes[index].classList.contains("completed")) {
+                completedPathData +=
+                    ` M ${previous.x} ${previous.y} ${curve}`;
+            }
+        });
+
+        basePath.setAttribute("d", fullPath);
+        completedPath.setAttribute("d", completedPathData);
+    }
+
+    window.addEventListener("load", drawSnakePath);
+
+    window.addEventListener("resize", drawSnakePath);
+</script>
+
+
+
+</body>
+</html>
+

@@ -31,7 +31,11 @@ public class Student
     private String learningGoal;
 
     private String currentSkillLevel;
+    @Column(nullable = false)
+    private Integer totalXp = 0;
 
+    @Column(nullable = false)
+    private Integer currentLevel = 1;
     public Student() {
     }
 
@@ -83,6 +87,20 @@ public class Student
         this.currentSkillLevel = currentSkillLevel;
     }
 
+    public Integer getTotalXp() {
+        return totalXp;
+    }
 
+    public void setTotalXp(Integer totalXp) {
+        this.totalXp = totalXp;
+    }
+
+    public Integer getCurrentLevel() {
+        return currentLevel;
+    }
+
+    public void setCurrentLevel(Integer currentLevel) {
+        this.currentLevel = currentLevel;
+    }
 
 }
